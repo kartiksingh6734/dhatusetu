@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreateLotRouteImport } from './routes/create-lot'
+import { Route as EstimateRouteImport } from './routes/estimate'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as OffersRouteImport } from './routes/offers'
+import { Route as PassportRouteImport } from './routes/passport'
 import { Route as PriceBoardRouteImport } from './routes/price-board'
 
 const IndexRoute = IndexRouteImport.update({
@@ -24,9 +27,24 @@ const CreateLotRoute = CreateLotRouteImport.update({
   path: '/create-lot',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EstimateRoute = EstimateRouteImport.update({
+  id: '/estimate',
+  path: '/estimate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffersRoute = OffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PassportRoute = PassportRouteImport.update({
+  id: '/passport',
+  path: '/passport',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PriceBoardRoute = PriceBoardRouteImport.update({
@@ -38,34 +56,68 @@ const PriceBoardRoute = PriceBoardRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-lot': typeof CreateLotRoute
+  '/estimate': typeof EstimateRoute
   '/home': typeof HomeRoute
+  '/offers': typeof OffersRoute
+  '/passport': typeof PassportRoute
   '/price-board': typeof PriceBoardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-lot': typeof CreateLotRoute
+  '/estimate': typeof EstimateRoute
   '/home': typeof HomeRoute
+  '/offers': typeof OffersRoute
+  '/passport': typeof PassportRoute
   '/price-board': typeof PriceBoardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/create-lot': typeof CreateLotRoute
+  '/estimate': typeof EstimateRoute
   '/home': typeof HomeRoute
+  '/offers': typeof OffersRoute
+  '/passport': typeof PassportRoute
   '/price-board': typeof PriceBoardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/create-lot' | '/home' | '/price-board'
+  fullPaths:
+    | '/'
+    | '/create-lot'
+    | '/estimate'
+    | '/home'
+    | '/offers'
+    | '/passport'
+    | '/price-board'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/create-lot' | '/home' | '/price-board'
-  id: '__root__' | '/' | '/create-lot' | '/home' | '/price-board'
+  to:
+    | '/'
+    | '/create-lot'
+    | '/estimate'
+    | '/home'
+    | '/offers'
+    | '/passport'
+    | '/price-board'
+  id:
+    | '__root__'
+    | '/'
+    | '/create-lot'
+    | '/estimate'
+    | '/home'
+    | '/offers'
+    | '/passport'
+    | '/price-board'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateLotRoute: typeof CreateLotRoute
+  EstimateRoute: typeof EstimateRoute
   HomeRoute: typeof HomeRoute
+  OffersRoute: typeof OffersRoute
+  PassportRoute: typeof PassportRoute
   PriceBoardRoute: typeof PriceBoardRoute
 }
 
@@ -85,11 +137,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreateLotRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/estimate': {
+      id: '/estimate'
+      path: '/estimate'
+      fullPath: '/estimate'
+      preLoaderRoute: typeof EstimateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offers': {
+      id: '/offers'
+      path: '/offers'
+      fullPath: '/offers'
+      preLoaderRoute: typeof OffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/passport': {
+      id: '/passport'
+      path: '/passport'
+      fullPath: '/passport'
+      preLoaderRoute: typeof PassportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/price-board': {
@@ -105,7 +178,10 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateLotRoute: CreateLotRoute,
+  EstimateRoute: EstimateRoute,
   HomeRoute: HomeRoute,
+  OffersRoute: OffersRoute,
+  PassportRoute: PassportRoute,
   PriceBoardRoute: PriceBoardRoute,
 }
 export const routeTree = rootRouteImport
