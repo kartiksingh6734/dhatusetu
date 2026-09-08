@@ -12,10 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CreateLotRouteImport } from './routes/create-lot'
 import { Route as EstimateRouteImport } from './routes/estimate'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as KhataRouteImport } from './routes/khata'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as PassportRouteImport } from './routes/passport'
+import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as PriceBoardRouteImport } from './routes/price-board'
+import { Route as SafetyRouteImport } from './routes/safety'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -32,9 +36,19 @@ const EstimateRoute = EstimateRouteImport.update({
   path: '/estimate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KhataRoute = KhataRouteImport.update({
+  id: '/khata',
+  path: '/khata',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OffersRoute = OffersRouteImport.update({
@@ -47,9 +61,19 @@ const PassportRoute = PassportRouteImport.update({
   path: '/passport',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PaymentRoute = PaymentRouteImport.update({
+  id: '/payment',
+  path: '/payment',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PriceBoardRoute = PriceBoardRouteImport.update({
   id: '/price-board',
   path: '/price-board',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafetyRoute = SafetyRouteImport.update({
+  id: '/safety',
+  path: '/safety',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -57,29 +81,41 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/create-lot': typeof CreateLotRoute
   '/estimate': typeof EstimateRoute
+  '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/khata': typeof KhataRoute
   '/offers': typeof OffersRoute
   '/passport': typeof PassportRoute
+  '/payment': typeof PaymentRoute
   '/price-board': typeof PriceBoardRoute
+  '/safety': typeof SafetyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create-lot': typeof CreateLotRoute
   '/estimate': typeof EstimateRoute
+  '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/khata': typeof KhataRoute
   '/offers': typeof OffersRoute
   '/passport': typeof PassportRoute
+  '/payment': typeof PaymentRoute
   '/price-board': typeof PriceBoardRoute
+  '/safety': typeof SafetyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/create-lot': typeof CreateLotRoute
   '/estimate': typeof EstimateRoute
+  '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/khata': typeof KhataRoute
   '/offers': typeof OffersRoute
   '/passport': typeof PassportRoute
+  '/payment': typeof PaymentRoute
   '/price-board': typeof PriceBoardRoute
+  '/safety': typeof SafetyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,38 +123,54 @@ export interface FileRouteTypes {
     | '/'
     | '/create-lot'
     | '/estimate'
+    | '/history'
     | '/home'
+    | '/khata'
     | '/offers'
     | '/passport'
+    | '/payment'
     | '/price-board'
+    | '/safety'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/create-lot'
     | '/estimate'
+    | '/history'
     | '/home'
+    | '/khata'
     | '/offers'
     | '/passport'
+    | '/payment'
     | '/price-board'
+    | '/safety'
   id:
     | '__root__'
     | '/'
     | '/create-lot'
     | '/estimate'
+    | '/history'
     | '/home'
+    | '/khata'
     | '/offers'
     | '/passport'
+    | '/payment'
     | '/price-board'
+    | '/safety'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CreateLotRoute: typeof CreateLotRoute
   EstimateRoute: typeof EstimateRoute
+  HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
+  KhataRoute: typeof KhataRoute
   OffersRoute: typeof OffersRoute
   PassportRoute: typeof PassportRoute
+  PaymentRoute: typeof PaymentRoute
   PriceBoardRoute: typeof PriceBoardRoute
+  SafetyRoute: typeof SafetyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -144,11 +196,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EstimateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/khata': {
+      id: '/khata'
+      path: '/khata'
+      fullPath: '/khata'
+      preLoaderRoute: typeof KhataRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/offers': {
@@ -165,11 +231,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/payment': {
+      id: '/payment'
+      path: '/payment'
+      fullPath: '/payment'
+      preLoaderRoute: typeof PaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/price-board': {
       id: '/price-board'
       path: '/price-board'
       fullPath: '/price-board'
       preLoaderRoute: typeof PriceBoardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safety': {
+      id: '/safety'
+      path: '/safety'
+      fullPath: '/safety'
+      preLoaderRoute: typeof SafetyRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -179,10 +259,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CreateLotRoute: CreateLotRoute,
   EstimateRoute: EstimateRoute,
+  HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
+  KhataRoute: KhataRoute,
   OffersRoute: OffersRoute,
   PassportRoute: PassportRoute,
+  PaymentRoute: PaymentRoute,
   PriceBoardRoute: PriceBoardRoute,
+  SafetyRoute: SafetyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
