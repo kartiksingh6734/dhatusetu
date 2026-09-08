@@ -31,7 +31,13 @@ export function Label({ children }: { children: ReactNode }) {
   );
 }
 
-export function Header({ title, back }: { title?: string; back?: boolean }) {
+export function Header({
+  title,
+  back,
+}: {
+  title?: string | undefined;
+  back?: boolean | undefined;
+}) {
   const { online } = useStore();
   const router = useRouter();
   return (
@@ -124,39 +130,6 @@ export function Screen({
   );
 }
 
-export function BigButton({
-  children,
-  to,
-  onClick,
-  variant = "primary",
-  disabled,
-}: {
-  children: ReactNode;
-  to?: string;
-  onClick?: () => void;
-  variant?: "primary" | "ghost";
-  disabled?: boolean;
-}) {
-  const cls =
-    variant === "primary"
-      ? "bg-lime text-ink active:bg-lime-dim"
-      : "bg-ink2 text-foreground ring-1 ring-border active:bg-ink3";
-  const base = `flex min-h-[60px] w-full items-center justify-center rounded-xl px-4 text-base font-semibold tracking-tight ${cls} ${
-    disabled ? "pointer-events-none opacity-40" : ""
-  }`;
-  if (to) {
-    return (
-      <Link to={to} className={base} onClick={onClick}>
-        {children}
-      </Link>
-    );
-  }
-  return (
-    <button className={base} onClick={onClick} disabled={disabled}>
-      {children}
-    </button>
-  );
-}
 
 export function StatusChip({ status }: { status: string }) {
   const good = status === "Paid" || status === "Verified";
