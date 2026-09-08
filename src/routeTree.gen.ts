@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CreateLotRouteImport } from './routes/create-lot'
+import { Route as HomeRouteImport } from './routes/home'
+import { Route as PriceBoardRouteImport } from './routes/price-board'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CreateLotRoute = CreateLotRouteImport.update({
+  id: '/create-lot',
+  path: '/create-lot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PriceBoardRoute = PriceBoardRouteImport.update({
+  id: '/price-board',
+  path: '/price-board',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/create-lot': typeof CreateLotRoute
+  '/home': typeof HomeRoute
+  '/price-board': typeof PriceBoardRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/create-lot': typeof CreateLotRoute
+  '/home': typeof HomeRoute
+  '/price-board': typeof PriceBoardRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/create-lot': typeof CreateLotRoute
+  '/home': typeof HomeRoute
+  '/price-board': typeof PriceBoardRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/create-lot' | '/home' | '/price-board'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/create-lot' | '/home' | '/price-board'
+  id: '__root__' | '/' | '/create-lot' | '/home' | '/price-board'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CreateLotRoute: typeof CreateLotRoute
+  HomeRoute: typeof HomeRoute
+  PriceBoardRoute: typeof PriceBoardRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/create-lot': {
+      id: '/create-lot'
+      path: '/create-lot'
+      fullPath: '/create-lot'
+      preLoaderRoute: typeof CreateLotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/price-board': {
+      id: '/price-board'
+      path: '/price-board'
+      fullPath: '/price-board'
+      preLoaderRoute: typeof PriceBoardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CreateLotRoute: CreateLotRoute,
+  HomeRoute: HomeRoute,
+  PriceBoardRoute: PriceBoardRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
