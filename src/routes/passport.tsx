@@ -1,6 +1,18 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Screen, Pane, Label } from "@/components/app-shell";
-import { useLot, material, recycler, rupees, stamp, store } from "@/lib/store";
+import {
+  useLot,
+  useStore,
+  material,
+  recycler,
+  rupees,
+  stamp,
+  store,
+  readableError,
+} from "@/lib/store";
+
 
 export const Route = createFileRoute("/passport")({
   validateSearch: (s: Record<string, unknown>) => ({ lot: String(s["lot"] ?? "") }),
