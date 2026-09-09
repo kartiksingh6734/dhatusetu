@@ -1,13 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, Banknote, Smartphone } from "lucide-react";
+import { toast } from "sonner";
 import { Screen, Label } from "@/components/app-shell";
 import {
   useLot,
+  useStore,
   material,
   recycler,
   rupees,
   store,
+  readableError,
   type PaymentMethod,
   type PaymentStatus,
 } from "@/lib/store";
@@ -34,17 +37,30 @@ export const Route = createFileRoute("/payment")({
 
 function Payment() {
   const { lot: lotId } = Route.useSearch();
+  const { loading } = useStore();
   const lot = useLot(lotId || undefined);
   const navigate = useNavigate();
-  const [weight, setWeight] = useState(lot?.weightKg ?? 0);
-  const [rate, setRate] = useState(lot?.ratePerKg ?? 0);
-  const [method, setMethod] = useState<PaymentMethod>("UPI");
+  const [weight, setWeight] = useState(0);
+  const [rate, setRate] = useState(0);
+  const [method, setMethod] = useState<PaymentMethod>("Cash");
   const [status, setStatus] = useState<PaymentStatus>("Paid");
+  const [saving, setSaving] = useState(false);
+  const [seeded, setSeeded] = useState(false);
+
+  // Seed the fields from the lot once it has loaded from the backend.
+  useEffect(() => {
+    if (!lot || seeded) return;
+    setWeight(lot.finalWeightKg ?? lot.weightKg);
+    setRate(lot.finalRate ?? lot.ratePerKg ?? 0);
+    if (lot.paymentMethod) setMethod(lot.paymentMethod);
+    if (lot.paymentStatus) setStatus(lot.paymentStatus);
+    setSeeded(true);
+  }, [lot, seeded]);
 
   if (!lot) {
     return (
       <Screen title="Payment" back>
-        <p className="px-4 text-faint">Lot not found.</p>
+        <p className="px-4 text-faint">{loading ? "Loading lot…" : "Lot not found."}</p>
       </Screen>
     );
   }
@@ -53,6 +69,22 @@ function Payment() {
   const r = recycler(lot.recyclerId);
   const amount = Math.round(weight * rate);
   const done = lot.status === "settled";
+
+  async function save() {
+    if (!lot || saving) return;
+    setSaving(true);
+    try {
+      await store.savePayment(lot.uuid, { weightKg: weight, rate, method, status });
+      toast.success("Payment record saved.");
+      navigate({ to: "/khata" });
+    } catch (e) {
+      toast.error("Unable to save the payment. Please try again.", {
+        description: readableError(e),
+      });
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <Screen title="Payment" back tabs={false}>
@@ -82,13 +114,19 @@ function Payment() {
           <div className="mt-3 grid grid-cols-2 gap-2.5">
             <Toggle
               on={method === "Cash"}
-              onClick={() => setMethod("Cash")}
+              onClick={() => {
+                setMethod("Cash");
+                setStatus("Paid");
+              }}
               icon={<Banknote className="size-7" />}
               label="Cash"
             />
             <Toggle
               on={method === "UPI"}
-              onClick={() => setMethod("UPI")}
+              onClick={() => {
+                setMethod("UPI");
+                setStatus("Paid");
+              }}
               icon={<Smartphone className="size-7" />}
               label="UPI"
             />
@@ -113,24 +151,18 @@ function Payment() {
         </div>
 
         <p className="font-mono text-[11px] leading-relaxed text-faint">
-          Demo only — no money moves through the app. UPI is recorded, not processed.
+          Prototype payment record — no real payment processed. UPI is recorded, not
+          processed.
         </p>
 
         <button
-          onClick={() => {
-            store.update(lot.id, {
-              status: "settled",
-              finalWeightKg: weight,
-              finalRate: rate,
-              amount,
-              paymentMethod: method,
-              paymentStatus: status,
-            });
-            navigate({ to: "/khata" });
-          }}
-          className="flex min-h-[64px] w-full items-center justify-center rounded-xl bg-lime text-lg font-semibold text-ink active:bg-lime-dim"
+          disabled={saving}
+          onClick={save}
+          className={`flex min-h-[64px] w-full items-center justify-center rounded-xl bg-lime text-lg font-semibold text-ink active:bg-lime-dim ${
+            saving ? "opacity-40" : ""
+          }`}
         >
-          {done ? "Update payment" : "Save payment"}
+          {saving ? "Saving…" : done ? "Update payment" : "Save payment"}
         </button>
       </div>
     </Screen>
