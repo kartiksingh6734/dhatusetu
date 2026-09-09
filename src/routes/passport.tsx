@@ -116,7 +116,9 @@ function Passport() {
             />
             <Row k="Recycler" v={r ? r.name : "Not selected"} />
             <Row k="Collected" v={stamp(lot.createdAt)} />
+            {lot.location ? <Row k="Location" v={lot.location} /> : null}
             {lot.handoverAt ? <Row k="Handover" v={stamp(lot.handoverAt)} /> : null}
+
           </dl>
         </Pane>
 
@@ -132,18 +134,16 @@ function Passport() {
 
         {lot.status === "accepted" ? (
           <button
-            onClick={() => {
-              store.update(lot.id, {
-                status: "handover",
-                handoverAt: new Date().toISOString(),
-              });
-              navigate({ to: "/payment", search: { lot: lot.id } });
-            }}
-            className="flex min-h-[64px] w-full items-center justify-center rounded-xl bg-lime text-lg font-semibold text-ink active:bg-lime-dim"
+            disabled={busy}
+            onClick={handover}
+            className={`flex min-h-[64px] w-full items-center justify-center rounded-xl bg-lime text-lg font-semibold text-ink active:bg-lime-dim ${
+              busy ? "opacity-40" : ""
+            }`}
           >
-            Confirm handover
+            {busy ? "Confirming…" : "Confirm handover"}
           </button>
         ) : null}
+
 
         {lot.status === "handover" ? (
           <Link
