@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Screen, Pane, Label } from "@/components/app-shell";
-import { useLot, material, rupees, stamp } from "@/lib/store";
+import { useLot, useStore, material, rupees, stamp } from "@/lib/store";
 
 export const Route = createFileRoute("/estimate")({
   validateSearch: (s: Record<string, unknown>) => ({ lot: String(s["lot"] ?? "") }),
@@ -24,19 +24,21 @@ export const Route = createFileRoute("/estimate")({
 
 function Estimate() {
   const { lot: lotId } = Route.useSearch();
+  const { loading } = useStore();
   const lot = useLot(lotId);
 
   if (!lot) {
     return (
       <Screen title="Price Estimate" back>
-        <p className="px-4 text-faint">Lot not found.</p>
+        <p className="px-4 text-faint">{loading ? "Loading lot…" : "Lot not found."}</p>
       </Screen>
     );
   }
 
   const m = material(lot.materialKey);
-  const low = m.min * lot.weightKg;
-  const high = m.max * lot.weightKg;
+  const low = lot.estMin ?? m.min * lot.weightKg;
+  const high = lot.estMax ?? m.max * lot.weightKg;
+
 
   return (
     <Screen title="Price Estimate" back tabs={false}>
@@ -81,9 +83,10 @@ function Estimate() {
 
         <div className="rounded-xl bg-warn/10 px-4 py-3.5 ring-1 ring-warn/30">
           <p className="text-[13px] leading-relaxed text-warn">
-            This estimate is indicative only. The final price is decided by the
-            recycler after weighing and inspecting the material.
+            This estimate is indicative only. Final price is determined by the recycler
+            after inspection.
           </p>
+
         </div>
 
         <Link

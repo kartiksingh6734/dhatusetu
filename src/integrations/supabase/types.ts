@@ -14,7 +14,279 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      collectors: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          operating_location: string | null
+          paid_amount: number
+          pending_amount: number
+          preferred_language: string
+          total_earnings: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          operating_location?: string | null
+          paid_amount?: number
+          pending_amount?: number
+          preferred_language?: string
+          total_earnings?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          operating_location?: string | null
+          paid_amount?: number
+          pending_amount?: number
+          preferred_language?: string
+          total_earnings?: number
+        }
+        Relationships: []
+      }
+      lots: {
+        Row: {
+          approximate_weight: number
+          collection_location: string | null
+          collector_id: string
+          condition: string
+          created_at: string
+          estimated_max_value: number | null
+          estimated_min_value: number | null
+          id: string
+          image_url: string | null
+          lot_id: string
+          material_category: string
+          material_description: string | null
+          status: string
+        }
+        Insert: {
+          approximate_weight: number
+          collection_location?: string | null
+          collector_id: string
+          condition?: string
+          created_at?: string
+          estimated_max_value?: number | null
+          estimated_min_value?: number | null
+          id?: string
+          image_url?: string | null
+          lot_id?: string
+          material_category: string
+          material_description?: string | null
+          status?: string
+        }
+        Update: {
+          approximate_weight?: number
+          collection_location?: string | null
+          collector_id?: string
+          condition?: string
+          created_at?: string
+          estimated_max_value?: number | null
+          estimated_min_value?: number | null
+          id?: string
+          image_url?: string | null
+          lot_id?: string
+          material_category?: string
+          material_description?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lots_collector_id_fkey"
+            columns: ["collector_id"]
+            isOneToOne: false
+            referencedRelation: "collectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prices: {
+        Row: {
+          buying_price_max: number
+          buying_price_min: number
+          created_at: string
+          effective_date: string
+          id: string
+          location: string
+          material_category: string
+          unit: string
+        }
+        Insert: {
+          buying_price_max: number
+          buying_price_min: number
+          created_at?: string
+          effective_date?: string
+          id?: string
+          location?: string
+          material_category: string
+          unit?: string
+        }
+        Update: {
+          buying_price_max?: number
+          buying_price_min?: number
+          created_at?: string
+          effective_date?: string
+          id?: string
+          location?: string
+          material_category?: string
+          unit?: string
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          created_at: string
+          estimated_total: number
+          id: string
+          lot_id: string
+          quoted_rate: number
+          recycler_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_total: number
+          id?: string
+          lot_id: string
+          quoted_rate: number
+          recycler_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          estimated_total?: number
+          id?: string
+          lot_id?: string
+          quoted_rate?: number
+          recycler_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: false
+            referencedRelation: "lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quotes_recycler_id_fkey"
+            columns: ["recycler_id"]
+            isOneToOne: false
+            referencedRelation: "recyclers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recyclers: {
+        Row: {
+          authorization_status: string
+          contact_details: string | null
+          created_at: string
+          id: string
+          location: string | null
+          materials_accepted: string[]
+          name: string
+          offered_rate: number
+          pickup_available: string | null
+          service_area: string | null
+        }
+        Insert: {
+          authorization_status?: string
+          contact_details?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          materials_accepted?: string[]
+          name: string
+          offered_rate?: number
+          pickup_available?: string | null
+          service_area?: string | null
+        }
+        Update: {
+          authorization_status?: string
+          contact_details?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          materials_accepted?: string[]
+          name?: string
+          offered_rate?: number
+          pickup_available?: string | null
+          service_area?: string | null
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          collector_id: string
+          created_at: string
+          final_price: number | null
+          final_weight: number | null
+          handover_location: string | null
+          handover_timestamp: string | null
+          id: string
+          lot_id: string
+          payment_method: string | null
+          payment_status: string
+          recycler_id: string | null
+          total_amount: number | null
+        }
+        Insert: {
+          collector_id: string
+          created_at?: string
+          final_price?: number | null
+          final_weight?: number | null
+          handover_location?: string | null
+          handover_timestamp?: string | null
+          id?: string
+          lot_id: string
+          payment_method?: string | null
+          payment_status?: string
+          recycler_id?: string | null
+          total_amount?: number | null
+        }
+        Update: {
+          collector_id?: string
+          created_at?: string
+          final_price?: number | null
+          final_weight?: number | null
+          handover_location?: string | null
+          handover_timestamp?: string | null
+          id?: string
+          lot_id?: string
+          payment_method?: string | null
+          payment_status?: string
+          recycler_id?: string | null
+          total_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_collector_id_fkey"
+            columns: ["collector_id"]
+            isOneToOne: false
+            referencedRelation: "collectors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_lot_id_fkey"
+            columns: ["lot_id"]
+            isOneToOne: true
+            referencedRelation: "lots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_recycler_id_fkey"
+            columns: ["recycler_id"]
+            isOneToOne: false
+            referencedRelation: "recyclers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

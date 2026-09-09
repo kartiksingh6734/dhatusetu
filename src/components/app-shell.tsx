@@ -38,7 +38,7 @@ export function Header({
   title?: string | undefined;
   back?: boolean | undefined;
 }) {
-  const { online } = useStore();
+  const { online, collector } = useStore();
   const router = useRouter();
   return (
     <header className="sticky top-0 z-20 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 bg-ink/95 px-4 py-3 backdrop-blur">
@@ -61,8 +61,9 @@ export function Header({
             {title ?? "DhatuSetu"}
           </p>
           <p className="truncate font-mono text-[11px] text-faint">
-            Collector · Ravi Kadam
+            Collector · {collector?.name ?? "…"}
           </p>
+
         </div>
       </div>
       <button

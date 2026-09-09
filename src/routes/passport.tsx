@@ -1,6 +1,18 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Screen, Pane, Label } from "@/components/app-shell";
-import { useLot, material, recycler, rupees, stamp, store } from "@/lib/store";
+import {
+  useLot,
+  useStore,
+  material,
+  recycler,
+  rupees,
+  stamp,
+  store,
+  readableError,
+} from "@/lib/store";
+
 
 export const Route = createFileRoute("/passport")({
   validateSearch: (s: Record<string, unknown>) => ({ lot: String(s["lot"] ?? "") }),
@@ -31,16 +43,35 @@ const STATUS_LABEL: Record<string, string> = {
 
 function Passport() {
   const { lot: lotId } = Route.useSearch();
+  const { loading } = useStore();
   const lot = useLot(lotId || undefined);
   const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
 
   if (!lot) {
     return (
       <Screen title="Lot Passport" back>
-        <p className="px-4 text-faint">Lot not found.</p>
+        <p className="px-4 text-faint">{loading ? "Loading lot…" : "Lot not found."}</p>
       </Screen>
     );
   }
+
+  async function handover() {
+    if (!lot || busy) return;
+    setBusy(true);
+    try {
+      await store.confirmHandover(lot.uuid);
+      toast.success("Handover confirmed.");
+      navigate({ to: "/payment", search: { lot: lot.id } });
+    } catch (e) {
+      toast.error("Unable to confirm handover. Please try again.", {
+        description: readableError(e),
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
 
   const m = material(lot.materialKey);
   const r = recycler(lot.recyclerId);
@@ -85,7 +116,9 @@ function Passport() {
             />
             <Row k="Recycler" v={r ? r.name : "Not selected"} />
             <Row k="Collected" v={stamp(lot.createdAt)} />
+            {lot.location ? <Row k="Location" v={lot.location} /> : null}
             {lot.handoverAt ? <Row k="Handover" v={stamp(lot.handoverAt)} /> : null}
+
           </dl>
         </Pane>
 
@@ -101,18 +134,16 @@ function Passport() {
 
         {lot.status === "accepted" ? (
           <button
-            onClick={() => {
-              store.update(lot.id, {
-                status: "handover",
-                handoverAt: new Date().toISOString(),
-              });
-              navigate({ to: "/payment", search: { lot: lot.id } });
-            }}
-            className="flex min-h-[64px] w-full items-center justify-center rounded-xl bg-lime text-lg font-semibold text-ink active:bg-lime-dim"
+            disabled={busy}
+            onClick={handover}
+            className={`flex min-h-[64px] w-full items-center justify-center rounded-xl bg-lime text-lg font-semibold text-ink active:bg-lime-dim ${
+              busy ? "opacity-40" : ""
+            }`}
           >
-            Confirm handover
+            {busy ? "Confirming…" : "Confirm handover"}
           </button>
         ) : null}
+
 
         {lot.status === "handover" ? (
           <Link
