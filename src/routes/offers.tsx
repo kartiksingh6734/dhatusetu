@@ -1,13 +1,17 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { BadgeCheck, MapPin, Truck } from "lucide-react";
+import { toast } from "sonner";
 import { Screen } from "@/components/app-shell";
 import {
   useLot,
-  RECYCLERS,
+  useStore,
   material,
   offerFor,
+  rankRecyclers,
   rupees,
   store,
+  readableError,
 } from "@/lib/store";
 
 export const Route = createFileRoute("/offers")({
@@ -18,7 +22,7 @@ export const Route = createFileRoute("/offers")({
       {
         name: "description",
         content:
-          "Compare offers from authorised recyclers near you: rate per kg, distance, materials accepted and pickup availability.",
+          "Compare offers from authorised recyclers near you: rate per kg, location, materials accepted and pickup availability.",
       },
       { property: "og:title", content: "Recycler Offers — DhatuSetu" },
       {
@@ -32,8 +36,18 @@ export const Route = createFileRoute("/offers")({
 
 function Offers() {
   const { lot: lotId } = Route.useSearch();
+  const { loading, recyclers, collector } = useStore();
   const lot = useLot(lotId || undefined);
   const navigate = useNavigate();
+  const [busy, setBusy] = useState<string | null>(null);
+
+  if (loading) {
+    return (
+      <Screen title="Recycler Offers" back>
+        <p className="px-4 text-faint">Loading offers…</p>
+      </Screen>
+    );
+  }
 
   if (!lot) {
     return (
@@ -52,9 +66,29 @@ function Offers() {
   }
 
   const m = material(lot.materialKey);
-  const list = RECYCLERS.filter((r) => r.accepts.includes(m.key)).sort(
-    (a, b) => b.rateFactor - a.rateFactor,
+  const area = collector?.location ?? "";
+  const matching = recyclers.filter((r) => r.accepts.includes(m.key));
+  const inArea = matching.filter(
+    (r) => !area || !r.serviceArea || r.serviceArea === area,
   );
+  const list = rankRecyclers(inArea.length ? inArea : matching, m, lot.weightKg);
+
+  async function accept(recyclerId: string, rate: number, total: number) {
+    if (busy || !lot) return;
+    setBusy(recyclerId);
+    try {
+      await store.acceptOffer(lot.uuid, recyclerId, rate, total);
+      store.setActive(lot.id);
+      toast.success("Offer accepted.");
+      navigate({ to: "/passport", search: { lot: lot.id } });
+    } catch (e) {
+      toast.error("Unable to accept the offer. Please try again.", {
+        description: readableError(e),
+      });
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
     <Screen title="Recycler Offers" back>
@@ -64,10 +98,19 @@ function Offers() {
         </p>
         <span className="font-mono text-[12px] text-lime">{list.length} near you</span>
       </div>
+      <p className="mt-1 px-4 text-[11px] text-faint">
+        Authorised buyers with pickup are shown first.
+      </p>
 
       <div className="mt-3 space-y-3 px-4">
+        {list.length === 0 ? (
+          <p className="text-[13px] text-faint">
+            No recycler is accepting {m.name} right now.
+          </p>
+        ) : null}
         {list.map((r) => {
           const { rate, total } = offerFor(r, m, lot.weightKg);
+          const isBusy = busy === r.id;
           return (
             <article
               key={r.id}
@@ -87,11 +130,11 @@ function Offers() {
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 font-mono text-[11px] text-faint">
+                  <p className="mt-1 font-mono text-[11px] leading-relaxed text-faint">
                     {r.authorisation}
                   </p>
                   <p className="mt-1.5 flex items-center gap-1.5 text-[13px] text-faint">
-                    <MapPin className="size-4" /> {r.distanceKm} km
+                    <MapPin className="size-4" /> {r.location}
                   </p>
                   <p className="mt-0.5 flex items-center gap-1.5 text-[13px] text-faint">
                     <Truck className="size-4" /> {r.pickup}
@@ -120,19 +163,13 @@ function Offers() {
                 </span>
               </div>
               <button
-                onClick={() => {
-                  store.update(lot.id, {
-                    recyclerId: r.id,
-                    ratePerKg: rate,
-                    quotedTotal: total,
-                    status: "accepted",
-                  });
-                  store.setActive(lot.id);
-                  navigate({ to: "/passport", search: { lot: lot.id } });
-                }}
-                className="min-h-[60px] w-full bg-lime text-[15px] font-semibold text-ink active:bg-lime-dim"
+                disabled={busy != null}
+                onClick={() => accept(r.id, rate, total)}
+                className={`min-h-[60px] w-full bg-lime text-[15px] font-semibold text-ink active:bg-lime-dim ${
+                  busy != null && !isBusy ? "opacity-40" : ""
+                }`}
               >
-                Accept offer · {rupees(total)}
+                {isBusy ? "Accepting…" : `Accept offer · ${rupees(total)}`}
               </button>
             </article>
           );
@@ -140,7 +177,8 @@ function Offers() {
       </div>
 
       <p className="px-4 py-5 text-[11px] leading-relaxed text-faint">
-        Estimates are indicative. Final price is set by the recycler at the weighing.
+        Recycler details are demonstration data. Estimates are indicative — the final
+        price is set by the recycler at the weighing.
       </p>
     </Screen>
   );
