@@ -43,16 +43,35 @@ const STATUS_LABEL: Record<string, string> = {
 
 function Passport() {
   const { lot: lotId } = Route.useSearch();
+  const { loading } = useStore();
   const lot = useLot(lotId || undefined);
   const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
 
   if (!lot) {
     return (
       <Screen title="Lot Passport" back>
-        <p className="px-4 text-faint">Lot not found.</p>
+        <p className="px-4 text-faint">{loading ? "Loading lot…" : "Lot not found."}</p>
       </Screen>
     );
   }
+
+  async function handover() {
+    if (!lot || busy) return;
+    setBusy(true);
+    try {
+      await store.confirmHandover(lot.uuid);
+      toast.success("Handover confirmed.");
+      navigate({ to: "/payment", search: { lot: lot.id } });
+    } catch (e) {
+      toast.error("Unable to confirm handover. Please try again.", {
+        description: readableError(e),
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
 
   const m = material(lot.materialKey);
   const r = recycler(lot.recyclerId);
