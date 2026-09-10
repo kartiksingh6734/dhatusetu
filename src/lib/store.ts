@@ -378,21 +378,16 @@ export const store = {
     const lot = state.lots.find((l) => l.uuid === lotUuid);
     if (!collector || !lot) throw new Error("Lot not found.");
     const at = new Date().toISOString();
-    const { error } = await supabase.from("transactions").upsert(
-      {
-        lot_id: lotUuid,
-        collector_id: collector.id,
-        recycler_id: lot.recyclerId ?? null,
-        final_weight: lot.weightKg,
-        final_price: lot.ratePerKg ?? 0,
-        total_amount: lot.quotedTotal ?? 0,
-        payment_status: "Pending",
-        handover_timestamp: at,
-        handover_location: lot.location ?? collector.location,
-      },
-      { onConflict: "lot_id" },
-    );
-    if (error) throw error;
+    await writeTransaction(lotUuid, {
+      collector_id: collector.id,
+      recycler_id: lot.recyclerId ?? null,
+      final_weight: lot.weightKg,
+      final_price: lot.ratePerKg ?? 0,
+      total_amount: lot.quotedTotal ?? 0,
+      payment_status: "Pending",
+      handover_timestamp: at,
+      handover_location: lot.location ?? collector.location,
+    });
 
     const { error: lErr } = await supabase
       .from("lots")
