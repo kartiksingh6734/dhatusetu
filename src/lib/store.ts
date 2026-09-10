@@ -417,22 +417,17 @@ export const store = {
     if (!collector || !lot) throw new Error("Lot not found.");
     const amount = Math.round(p.weightKg * p.rate);
     const at = lot.handoverAt ?? new Date().toISOString();
-    const { error } = await supabase.from("transactions").upsert(
-      {
-        lot_id: lotUuid,
-        collector_id: collector.id,
-        recycler_id: lot.recyclerId ?? null,
-        final_weight: p.weightKg,
-        final_price: p.rate,
-        total_amount: amount,
-        payment_method: p.method,
-        payment_status: p.status,
-        handover_timestamp: at,
-        handover_location: lot.handoverLocation ?? lot.location ?? collector.location,
-      },
-      { onConflict: "lot_id" },
-    );
-    if (error) throw error;
+    await writeTransaction(lotUuid, {
+      collector_id: collector.id,
+      recycler_id: lot.recyclerId ?? null,
+      final_weight: p.weightKg,
+      final_price: p.rate,
+      total_amount: amount,
+      payment_method: p.method,
+      payment_status: p.status,
+      handover_timestamp: at,
+      handover_location: lot.handoverLocation ?? lot.location ?? collector.location,
+    });
 
     const { error: lErr } = await supabase
       .from("lots")
