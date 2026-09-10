@@ -448,6 +448,37 @@ export const store = {
   },
 };
 
+/**
+ * Write the single transaction row for a lot. Repeated taps update the same
+ * row instead of creating a duplicate.
+ */
+async function writeTransaction(
+  lotUuid: string,
+  row: {
+    collector_id: string;
+    recycler_id: string | null;
+    final_weight: number;
+    final_price: number;
+    total_amount: number;
+    payment_method?: string;
+    payment_status: string;
+    handover_timestamp: string;
+    handover_location: string | null;
+  },
+) {
+  const { data: existing, error: findErr } = await supabase
+    .from("transactions")
+    .select("id")
+    .eq("lot_id", lotUuid)
+    .maybeSingle();
+  if (findErr) throw findErr;
+
+  const { error } = existing
+    ? await supabase.from("transactions").update(row).eq("id", existing.id)
+    : await supabase.from("transactions").insert({ ...row, lot_id: lotUuid });
+  if (error) throw error;
+}
+
 function patch(lotUuid: string, p: Partial<Lot>) {
   set({
     lots: state.lots.map((l) => (l.uuid === lotUuid ? { ...l, ...p } : l)),
