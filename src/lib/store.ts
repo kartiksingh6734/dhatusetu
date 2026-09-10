@@ -188,7 +188,9 @@ function mapLot(
     if (tx["final_price"] != null) lot.finalRate = Number(tx["final_price"]);
     if (tx["total_amount"] != null) lot.amount = Number(tx["total_amount"]);
     if (tx["payment_method"]) lot.paymentMethod = tx["payment_method"] as PaymentMethod;
-    if (tx["payment_status"]) lot.paymentStatus = tx["payment_status"] as PaymentStatus;
+    if (tx["payment_status"]) {
+      lot.paymentStatus = /paid/i.test(String(tx["payment_status"])) ? "Paid" : "Pending";
+    }
   }
   return lot;
 }
