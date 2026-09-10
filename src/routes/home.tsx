@@ -41,10 +41,10 @@ function HomeScreen() {
           <div className="px-5 pb-3 pt-4">
             <Label>Total earnings</Label>
             <p className="mt-1 font-display text-5xl font-semibold leading-none tabular-nums">
-              {rupees(total)}
+              {loading ? "…" : rupees(total)}
             </p>
             <p className="mt-2 text-sm font-medium text-lime">
-              Paid {rupees(paid)}
+              {loading ? "Loading your account…" : `Paid ${rupees(paid)}`}
             </p>
           </div>
           {latest ? (
