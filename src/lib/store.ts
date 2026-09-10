@@ -135,7 +135,13 @@ function set(next: Partial<State>) {
 
 function mapRecycler(r: Record<string, unknown>): Recycler {
   const status = String(r["authorization_status"] ?? "");
-  const pickup = String(r["pickup_available"] ?? "");
+  const rawPickup = r["pickup_available"];
+  const pickup =
+    typeof rawPickup === "boolean"
+      ? rawPickup
+        ? "Pickup available"
+        : "Self drop-off"
+      : String(rawPickup ?? "");
   return {
     id: String(r["id"]),
     name: String(r["name"]),
@@ -182,7 +188,9 @@ function mapLot(
     if (tx["final_price"] != null) lot.finalRate = Number(tx["final_price"]);
     if (tx["total_amount"] != null) lot.amount = Number(tx["total_amount"]);
     if (tx["payment_method"]) lot.paymentMethod = tx["payment_method"] as PaymentMethod;
-    if (tx["payment_status"]) lot.paymentStatus = tx["payment_status"] as PaymentStatus;
+    if (tx["payment_status"]) {
+      lot.paymentStatus = /paid/i.test(String(tx["payment_status"])) ? "Paid" : "Pending";
+    }
   }
   return lot;
 }
@@ -336,20 +344,26 @@ export const store = {
     return lot;
   },
 
-  /** Accept a recycler offer. Safe to call twice — upserts one quote per pair. */
+  /** Accept a recycler offer. Safe to call twice — one accepted quote per lot+recycler. */
   async acceptOffer(lotUuid: string, recyclerId: string, rate: number, total: number) {
-    const { error: qErr } = await supabase
+    const { data: existing, error: findErr } = await supabase
       .from("quotes")
-      .upsert(
-        {
-          lot_id: lotUuid,
-          recycler_id: recyclerId,
-          quoted_rate: rate,
-          estimated_total: total,
-          status: "accepted",
-        },
-        { onConflict: "lot_id,recycler_id" },
-      );
+      .select("id")
+      .eq("lot_id", lotUuid)
+      .eq("recycler_id", recyclerId)
+      .maybeSingle();
+    if (findErr) throw findErr;
+
+    const row = {
+      quoted_rate: rate,
+      estimated_total: total,
+      status: "accepted",
+    };
+    const { error: qErr } = existing
+      ? await supabase.from("quotes").update(row).eq("id", existing.id)
+      : await supabase
+          .from("quotes")
+          .insert({ ...row, lot_id: lotUuid, recycler_id: recyclerId });
     if (qErr) throw qErr;
 
     const { error: lErr } = await supabase
@@ -372,21 +386,16 @@ export const store = {
     const lot = state.lots.find((l) => l.uuid === lotUuid);
     if (!collector || !lot) throw new Error("Lot not found.");
     const at = new Date().toISOString();
-    const { error } = await supabase.from("transactions").upsert(
-      {
-        lot_id: lotUuid,
-        collector_id: collector.id,
-        recycler_id: lot.recyclerId ?? null,
-        final_weight: lot.weightKg,
-        final_price: lot.ratePerKg ?? 0,
-        total_amount: lot.quotedTotal ?? 0,
-        payment_status: "Pending",
-        handover_timestamp: at,
-        handover_location: lot.location ?? collector.location,
-      },
-      { onConflict: "lot_id" },
-    );
-    if (error) throw error;
+    await writeTransaction(lotUuid, {
+      collector_id: collector.id,
+      recycler_id: lot.recyclerId ?? null,
+      final_weight: lot.weightKg,
+      final_price: lot.ratePerKg ?? 0,
+      total_amount: lot.quotedTotal ?? 0,
+      payment_status: "Pending",
+      handover_timestamp: at,
+      handover_location: lot.location ?? collector.location,
+    });
 
     const { error: lErr } = await supabase
       .from("lots")
@@ -416,22 +425,17 @@ export const store = {
     if (!collector || !lot) throw new Error("Lot not found.");
     const amount = Math.round(p.weightKg * p.rate);
     const at = lot.handoverAt ?? new Date().toISOString();
-    const { error } = await supabase.from("transactions").upsert(
-      {
-        lot_id: lotUuid,
-        collector_id: collector.id,
-        recycler_id: lot.recyclerId ?? null,
-        final_weight: p.weightKg,
-        final_price: p.rate,
-        total_amount: amount,
-        payment_method: p.method,
-        payment_status: p.status,
-        handover_timestamp: at,
-        handover_location: lot.handoverLocation ?? lot.location ?? collector.location,
-      },
-      { onConflict: "lot_id" },
-    );
-    if (error) throw error;
+    await writeTransaction(lotUuid, {
+      collector_id: collector.id,
+      recycler_id: lot.recyclerId ?? null,
+      final_weight: p.weightKg,
+      final_price: p.rate,
+      total_amount: amount,
+      payment_method: p.method,
+      payment_status: p.status,
+      handover_timestamp: at,
+      handover_location: lot.handoverLocation ?? lot.location ?? collector.location,
+    });
 
     const { error: lErr } = await supabase
       .from("lots")
@@ -451,6 +455,37 @@ export const store = {
     await syncCollectorTotals();
   },
 };
+
+/**
+ * Write the single transaction row for a lot. Repeated taps update the same
+ * row instead of creating a duplicate.
+ */
+async function writeTransaction(
+  lotUuid: string,
+  row: {
+    collector_id: string;
+    recycler_id: string | null;
+    final_weight: number;
+    final_price: number;
+    total_amount: number;
+    payment_method?: string;
+    payment_status: string;
+    handover_timestamp: string;
+    handover_location: string | null;
+  },
+) {
+  const { data: existing, error: findErr } = await supabase
+    .from("transactions")
+    .select("id")
+    .eq("lot_id", lotUuid)
+    .maybeSingle();
+  if (findErr) throw findErr;
+
+  const { error } = existing
+    ? await supabase.from("transactions").update(row).eq("id", existing.id)
+    : await supabase.from("transactions").insert({ ...row, lot_id: lotUuid });
+  if (error) throw error;
+}
 
 function patch(lotUuid: string, p: Partial<Lot>) {
   set({
