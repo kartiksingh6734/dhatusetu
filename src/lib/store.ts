@@ -135,7 +135,13 @@ function set(next: Partial<State>) {
 
 function mapRecycler(r: Record<string, unknown>): Recycler {
   const status = String(r["authorization_status"] ?? "");
-  const pickup = String(r["pickup_available"] ?? "");
+  const rawPickup = r["pickup_available"];
+  const pickup =
+    typeof rawPickup === "boolean"
+      ? rawPickup
+        ? "Pickup available"
+        : "Self drop-off"
+      : String(rawPickup ?? "");
   return {
     id: String(r["id"]),
     name: String(r["name"]),
