@@ -51,7 +51,7 @@ export type Database = {
         Row: {
           approximate_weight: number
           collection_location: string | null
-          collector_id: string
+          collector_id: string | null
           condition: string
           created_at: string
           estimated_max_value: number | null
@@ -66,14 +66,14 @@ export type Database = {
         Insert: {
           approximate_weight: number
           collection_location?: string | null
-          collector_id: string
+          collector_id?: string | null
           condition?: string
           created_at?: string
           estimated_max_value?: number | null
           estimated_min_value?: number | null
           id?: string
           image_url?: string | null
-          lot_id?: string
+          lot_id: string
           material_category: string
           material_description?: string | null
           status?: string
@@ -81,7 +81,7 @@ export type Database = {
         Update: {
           approximate_weight?: number
           collection_location?: string | null
-          collector_id?: string
+          collector_id?: string | null
           condition?: string
           created_at?: string
           estimated_max_value?: number | null
@@ -191,7 +191,7 @@ export type Database = {
           materials_accepted: string[]
           name: string
           offered_rate: number
-          pickup_available: string | null
+          pickup_available: boolean
           service_area: string | null
         }
         Insert: {
@@ -203,7 +203,7 @@ export type Database = {
           materials_accepted?: string[]
           name: string
           offered_rate?: number
-          pickup_available?: string | null
+          pickup_available?: boolean
           service_area?: string | null
         }
         Update: {
@@ -215,53 +215,53 @@ export type Database = {
           materials_accepted?: string[]
           name?: string
           offered_rate?: number
-          pickup_available?: string | null
+          pickup_available?: boolean
           service_area?: string | null
         }
         Relationships: []
       }
       transactions: {
         Row: {
-          collector_id: string
+          collector_id: string | null
           created_at: string
-          final_price: number | null
-          final_weight: number | null
+          final_price: number
+          final_weight: number
           handover_location: string | null
-          handover_timestamp: string | null
+          handover_timestamp: string
           id: string
           lot_id: string
-          payment_method: string | null
+          payment_method: string
           payment_status: string
           recycler_id: string | null
-          total_amount: number | null
+          total_amount: number
         }
         Insert: {
-          collector_id: string
+          collector_id?: string | null
           created_at?: string
-          final_price?: number | null
-          final_weight?: number | null
+          final_price: number
+          final_weight: number
           handover_location?: string | null
-          handover_timestamp?: string | null
+          handover_timestamp?: string
           id?: string
           lot_id: string
-          payment_method?: string | null
+          payment_method?: string
           payment_status?: string
           recycler_id?: string | null
-          total_amount?: number | null
+          total_amount: number
         }
         Update: {
-          collector_id?: string
+          collector_id?: string | null
           created_at?: string
-          final_price?: number | null
-          final_weight?: number | null
+          final_price?: number
+          final_weight?: number
           handover_location?: string | null
-          handover_timestamp?: string | null
+          handover_timestamp?: string
           id?: string
           lot_id?: string
-          payment_method?: string | null
+          payment_method?: string
           payment_status?: string
           recycler_id?: string | null
-          total_amount?: number | null
+          total_amount?: number
         }
         Relationships: [
           {
@@ -274,7 +274,7 @@ export type Database = {
           {
             foreignKeyName: "transactions_lot_id_fkey"
             columns: ["lot_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "lots"
             referencedColumns: ["id"]
           },
