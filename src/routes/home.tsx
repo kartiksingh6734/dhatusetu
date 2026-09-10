@@ -30,7 +30,7 @@ const ACTIONS = [
 ] as const;
 
 function HomeScreen() {
-  const { lots } = useStore();
+  const { lots, loading } = useStore();
   const { total, paid } = totals(lots);
   const latest = lots.find((l) => l.amount != null);
 
