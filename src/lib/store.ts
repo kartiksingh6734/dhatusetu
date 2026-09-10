@@ -316,6 +316,7 @@ export const store = {
     const { data, error } = await supabase
       .from("lots")
       .insert({
+        lot_id: `LOT-${Math.floor(1000 + Math.random() * 9000)}`,
         collector_id: collector.id,
         material_category: input.materialKey,
         material_description: input.description ?? null,
@@ -377,8 +378,8 @@ export const store = {
         collector_id: collector.id,
         recycler_id: lot.recyclerId ?? null,
         final_weight: lot.weightKg,
-        final_price: lot.ratePerKg ?? null,
-        total_amount: lot.quotedTotal ?? null,
+        final_price: lot.ratePerKg ?? 0,
+        total_amount: lot.quotedTotal ?? 0,
         payment_status: "Pending",
         handover_timestamp: at,
         handover_location: lot.location ?? collector.location,
