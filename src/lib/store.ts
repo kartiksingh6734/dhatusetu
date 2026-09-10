@@ -336,20 +336,26 @@ export const store = {
     return lot;
   },
 
-  /** Accept a recycler offer. Safe to call twice — upserts one quote per pair. */
+  /** Accept a recycler offer. Safe to call twice — one accepted quote per lot+recycler. */
   async acceptOffer(lotUuid: string, recyclerId: string, rate: number, total: number) {
-    const { error: qErr } = await supabase
+    const { data: existing, error: findErr } = await supabase
       .from("quotes")
-      .upsert(
-        {
-          lot_id: lotUuid,
-          recycler_id: recyclerId,
-          quoted_rate: rate,
-          estimated_total: total,
-          status: "accepted",
-        },
-        { onConflict: "lot_id,recycler_id" },
-      );
+      .select("id")
+      .eq("lot_id", lotUuid)
+      .eq("recycler_id", recyclerId)
+      .maybeSingle();
+    if (findErr) throw findErr;
+
+    const row = {
+      quoted_rate: rate,
+      estimated_total: total,
+      status: "accepted",
+    };
+    const { error: qErr } = existing
+      ? await supabase.from("quotes").update(row).eq("id", existing.id)
+      : await supabase
+          .from("quotes")
+          .insert({ ...row, lot_id: lotUuid, recycler_id: recyclerId });
     if (qErr) throw qErr;
 
     const { error: lErr } = await supabase
