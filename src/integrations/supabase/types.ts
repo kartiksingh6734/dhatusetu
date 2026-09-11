@@ -24,6 +24,7 @@ export type Database = {
           pending_amount: number
           preferred_language: string
           total_earnings: number
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -34,6 +35,7 @@ export type Database = {
           pending_amount?: number
           preferred_language?: string
           total_earnings?: number
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -44,6 +46,7 @@ export type Database = {
           pending_amount?: number
           preferred_language?: string
           total_earnings?: number
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -61,6 +64,7 @@ export type Database = {
           lot_id: string
           material_category: string
           material_description: string | null
+          pickup_status: string | null
           status: string
         }
         Insert: {
@@ -76,6 +80,7 @@ export type Database = {
           lot_id: string
           material_category: string
           material_description?: string | null
+          pickup_status?: string | null
           status?: string
         }
         Update: {
@@ -91,6 +96,7 @@ export type Database = {
           lot_id?: string
           material_category?: string
           material_description?: string | null
+          pickup_status?: string | null
           status?: string
         }
         Relationships: [
@@ -136,33 +142,69 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          role: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       quotes: {
         Row: {
           created_at: string
           estimated_total: number
           id: string
           lot_id: string
+          note: string | null
+          pickup_at: string | null
+          pickup_available: boolean
           quoted_rate: number
           recycler_id: string
           status: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
           estimated_total: number
           id?: string
           lot_id: string
+          note?: string | null
+          pickup_at?: string | null
+          pickup_available?: boolean
           quoted_rate: number
           recycler_id: string
           status?: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
           estimated_total?: number
           id?: string
           lot_id?: string
+          note?: string | null
+          pickup_at?: string | null
+          pickup_available?: boolean
           quoted_rate?: number
           recycler_id?: string
           status?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -185,38 +227,59 @@ export type Database = {
         Row: {
           authorization_status: string
           contact_details: string | null
+          contact_person: string | null
           created_at: string
+          email: string | null
           id: string
           location: string | null
           materials_accepted: string[]
           name: string
           offered_rate: number
+          phone: string | null
           pickup_available: boolean
+          registration_reference: string | null
           service_area: string | null
+          updated_at: string
+          user_id: string | null
+          verification_status: string
         }
         Insert: {
           authorization_status?: string
           contact_details?: string | null
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           location?: string | null
           materials_accepted?: string[]
           name: string
           offered_rate?: number
+          phone?: string | null
           pickup_available?: boolean
+          registration_reference?: string | null
           service_area?: string | null
+          updated_at?: string
+          user_id?: string | null
+          verification_status?: string
         }
         Update: {
           authorization_status?: string
           contact_details?: string | null
+          contact_person?: string | null
           created_at?: string
+          email?: string | null
           id?: string
           location?: string | null
           materials_accepted?: string[]
           name?: string
           offered_rate?: number
+          phone?: string | null
           pickup_available?: boolean
+          registration_reference?: string | null
           service_area?: string | null
+          updated_at?: string
+          user_id?: string | null
+          verification_status?: string
         }
         Relationships: []
       }
