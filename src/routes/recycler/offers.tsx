@@ -20,7 +20,7 @@ export const Route = createFileRoute("/recycler/offers")({
       },
     ],
   }),
-  component: MyOffers;
+  component: MyOffers,
 });
 
 function statusTone(s: string) {
