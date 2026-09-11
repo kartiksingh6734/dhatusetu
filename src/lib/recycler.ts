@@ -337,7 +337,19 @@ export async function setPickupStatus(lotUuid: string, status: PickupStatus) {
   if (error) throw error;
 }
 
-async function writeTransaction(lotUuid: string, row: Record<string, unknown>) {
+type TxWrite = {
+  collector_id: string | null;
+  recycler_id: string;
+  final_weight: number;
+  final_price: number;
+  total_amount: number;
+  payment_method?: string;
+  payment_status: string;
+  handover_timestamp: string;
+  handover_location: string | null;
+};
+
+async function writeTransaction(lotUuid: string, row: TxWrite) {
   const { data: existing, error: findErr } = await supabase
     .from("transactions")
     .select("id")
@@ -346,7 +358,7 @@ async function writeTransaction(lotUuid: string, row: Record<string, unknown>) {
   if (findErr) throw findErr;
   const { error } = existing
     ? await supabase.from("transactions").update(row).eq("id", existing.id)
-    : await supabase.from("transactions").insert({ ...row, lot_id: lotUuid } as never);
+    : await supabase.from("transactions").insert({ ...row, lot_id: lotUuid });
   if (error) throw error;
 }
 
