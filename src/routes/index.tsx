@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { LANGUAGES, type Lang } from "@/lib/i18n";
 import { store } from "@/lib/store";
