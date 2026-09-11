@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CreateLotRouteImport } from './routes/create-lot'
 import { Route as EstimateRouteImport } from './routes/estimate'
 import { Route as HistoryRouteImport } from './routes/history'
@@ -20,10 +21,23 @@ import { Route as PassportRouteImport } from './routes/passport'
 import { Route as PaymentRouteImport } from './routes/payment'
 import { Route as PriceBoardRouteImport } from './routes/price-board'
 import { Route as SafetyRouteImport } from './routes/safety'
+import { Route as RecyclerIndexRouteImport } from './routes/recycler/index'
+import { Route as RecyclerFacilityRouteImport } from './routes/recycler/facility'
+import { Route as RecyclerLotRouteImport } from './routes/recycler/lot'
+import { Route as RecyclerLotsRouteImport } from './routes/recycler/lots'
+import { Route as RecyclerOffersRouteImport } from './routes/recycler/offers'
+import { Route as RecyclerPickupsRouteImport } from './routes/recycler/pickups'
+import { Route as RecyclerRegisterRouteImport } from './routes/recycler/register'
+import { Route as RecyclerTransactionsRouteImport } from './routes/recycler/transactions'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreateLotRoute = CreateLotRouteImport.update({
@@ -76,9 +90,50 @@ const SafetyRoute = SafetyRouteImport.update({
   path: '/safety',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecyclerIndexRoute = RecyclerIndexRouteImport.update({
+  id: '/recycler/',
+  path: '/recycler/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerFacilityRoute = RecyclerFacilityRouteImport.update({
+  id: '/recycler/facility',
+  path: '/recycler/facility',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerLotRoute = RecyclerLotRouteImport.update({
+  id: '/recycler/lot',
+  path: '/recycler/lot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerLotsRoute = RecyclerLotsRouteImport.update({
+  id: '/recycler/lots',
+  path: '/recycler/lots',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerOffersRoute = RecyclerOffersRouteImport.update({
+  id: '/recycler/offers',
+  path: '/recycler/offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerPickupsRoute = RecyclerPickupsRouteImport.update({
+  id: '/recycler/pickups',
+  path: '/recycler/pickups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerRegisterRoute = RecyclerRegisterRouteImport.update({
+  id: '/recycler/register',
+  path: '/recycler/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecyclerTransactionsRoute = RecyclerTransactionsRouteImport.update({
+  id: '/recycler/transactions',
+  path: '/recycler/transactions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/create-lot': typeof CreateLotRoute
   '/estimate': typeof EstimateRoute
   '/history': typeof HistoryRoute
@@ -89,9 +144,18 @@ export interface FileRoutesByFullPath {
   '/payment': typeof PaymentRoute
   '/price-board': typeof PriceBoardRoute
   '/safety': typeof SafetyRoute
+  '/recycler/facility': typeof RecyclerFacilityRoute
+  '/recycler/lot': typeof RecyclerLotRoute
+  '/recycler/lots': typeof RecyclerLotsRoute
+  '/recycler/offers': typeof RecyclerOffersRoute
+  '/recycler/pickups': typeof RecyclerPickupsRoute
+  '/recycler/register': typeof RecyclerRegisterRoute
+  '/recycler/transactions': typeof RecyclerTransactionsRoute
+  '/recycler/': typeof RecyclerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/create-lot': typeof CreateLotRoute
   '/estimate': typeof EstimateRoute
   '/history': typeof HistoryRoute
@@ -102,10 +166,19 @@ export interface FileRoutesByTo {
   '/payment': typeof PaymentRoute
   '/price-board': typeof PriceBoardRoute
   '/safety': typeof SafetyRoute
+  '/recycler/facility': typeof RecyclerFacilityRoute
+  '/recycler/lot': typeof RecyclerLotRoute
+  '/recycler/lots': typeof RecyclerLotsRoute
+  '/recycler/offers': typeof RecyclerOffersRoute
+  '/recycler/pickups': typeof RecyclerPickupsRoute
+  '/recycler/register': typeof RecyclerRegisterRoute
+  '/recycler/transactions': typeof RecyclerTransactionsRoute
+  '/recycler': typeof RecyclerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/create-lot': typeof CreateLotRoute
   '/estimate': typeof EstimateRoute
   '/history': typeof HistoryRoute
@@ -116,11 +189,20 @@ export interface FileRoutesById {
   '/payment': typeof PaymentRoute
   '/price-board': typeof PriceBoardRoute
   '/safety': typeof SafetyRoute
+  '/recycler/facility': typeof RecyclerFacilityRoute
+  '/recycler/lot': typeof RecyclerLotRoute
+  '/recycler/lots': typeof RecyclerLotsRoute
+  '/recycler/offers': typeof RecyclerOffersRoute
+  '/recycler/pickups': typeof RecyclerPickupsRoute
+  '/recycler/register': typeof RecyclerRegisterRoute
+  '/recycler/transactions': typeof RecyclerTransactionsRoute
+  '/recycler/': typeof RecyclerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/create-lot'
     | '/estimate'
     | '/history'
@@ -131,9 +213,18 @@ export interface FileRouteTypes {
     | '/payment'
     | '/price-board'
     | '/safety'
+    | '/recycler/facility'
+    | '/recycler/lot'
+    | '/recycler/lots'
+    | '/recycler/offers'
+    | '/recycler/pickups'
+    | '/recycler/register'
+    | '/recycler/transactions'
+    | '/recycler/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/create-lot'
     | '/estimate'
     | '/history'
@@ -144,9 +235,18 @@ export interface FileRouteTypes {
     | '/payment'
     | '/price-board'
     | '/safety'
+    | '/recycler/facility'
+    | '/recycler/lot'
+    | '/recycler/lots'
+    | '/recycler/offers'
+    | '/recycler/pickups'
+    | '/recycler/register'
+    | '/recycler/transactions'
+    | '/recycler'
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/create-lot'
     | '/estimate'
     | '/history'
@@ -157,10 +257,19 @@ export interface FileRouteTypes {
     | '/payment'
     | '/price-board'
     | '/safety'
+    | '/recycler/facility'
+    | '/recycler/lot'
+    | '/recycler/lots'
+    | '/recycler/offers'
+    | '/recycler/pickups'
+    | '/recycler/register'
+    | '/recycler/transactions'
+    | '/recycler/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   CreateLotRoute: typeof CreateLotRoute
   EstimateRoute: typeof EstimateRoute
   HistoryRoute: typeof HistoryRoute
@@ -171,6 +280,14 @@ export interface RootRouteChildren {
   PaymentRoute: typeof PaymentRoute
   PriceBoardRoute: typeof PriceBoardRoute
   SafetyRoute: typeof SafetyRoute
+  RecyclerFacilityRoute: typeof RecyclerFacilityRoute
+  RecyclerLotRoute: typeof RecyclerLotRoute
+  RecyclerLotsRoute: typeof RecyclerLotsRoute
+  RecyclerOffersRoute: typeof RecyclerOffersRoute
+  RecyclerPickupsRoute: typeof RecyclerPickupsRoute
+  RecyclerRegisterRoute: typeof RecyclerRegisterRoute
+  RecyclerTransactionsRoute: typeof RecyclerTransactionsRoute
+  RecyclerIndexRoute: typeof RecyclerIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -180,6 +297,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/create-lot': {
@@ -252,11 +376,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SafetyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recycler/': {
+      id: '/recycler/'
+      path: '/recycler'
+      fullPath: '/recycler/'
+      preLoaderRoute: typeof RecyclerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler/facility': {
+      id: '/recycler/facility'
+      path: '/recycler/facility'
+      fullPath: '/recycler/facility'
+      preLoaderRoute: typeof RecyclerFacilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler/lot': {
+      id: '/recycler/lot'
+      path: '/recycler/lot'
+      fullPath: '/recycler/lot'
+      preLoaderRoute: typeof RecyclerLotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler/lots': {
+      id: '/recycler/lots'
+      path: '/recycler/lots'
+      fullPath: '/recycler/lots'
+      preLoaderRoute: typeof RecyclerLotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler/offers': {
+      id: '/recycler/offers'
+      path: '/recycler/offers'
+      fullPath: '/recycler/offers'
+      preLoaderRoute: typeof RecyclerOffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler/pickups': {
+      id: '/recycler/pickups'
+      path: '/recycler/pickups'
+      fullPath: '/recycler/pickups'
+      preLoaderRoute: typeof RecyclerPickupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler/register': {
+      id: '/recycler/register'
+      path: '/recycler/register'
+      fullPath: '/recycler/register'
+      preLoaderRoute: typeof RecyclerRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recycler/transactions': {
+      id: '/recycler/transactions'
+      path: '/recycler/transactions'
+      fullPath: '/recycler/transactions'
+      preLoaderRoute: typeof RecyclerTransactionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   CreateLotRoute: CreateLotRoute,
   EstimateRoute: EstimateRoute,
   HistoryRoute: HistoryRoute,
@@ -267,6 +448,14 @@ const rootRouteChildren: RootRouteChildren = {
   PaymentRoute: PaymentRoute,
   PriceBoardRoute: PriceBoardRoute,
   SafetyRoute: SafetyRoute,
+  RecyclerFacilityRoute: RecyclerFacilityRoute,
+  RecyclerLotRoute: RecyclerLotRoute,
+  RecyclerLotsRoute: RecyclerLotsRoute,
+  RecyclerOffersRoute: RecyclerOffersRoute,
+  RecyclerPickupsRoute: RecyclerPickupsRoute,
+  RecyclerRegisterRoute: RecyclerRegisterRoute,
+  RecyclerTransactionsRoute: RecyclerTransactionsRoute,
+  RecyclerIndexRoute: RecyclerIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

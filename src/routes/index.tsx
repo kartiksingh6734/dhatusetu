@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { LANGUAGES, type Lang } from "@/lib/i18n";
 import { store } from "@/lib/store";
@@ -83,6 +83,14 @@ function Welcome() {
         >
           Start
         </button>
+
+        <Link
+          to="/auth"
+          search={{ role: "recycler" as const }}
+          className="mt-3 flex min-h-[56px] w-full items-center justify-center rounded-xl bg-ink2 text-base font-semibold text-lime ring-1 ring-lime/40"
+        >
+          I am a Recycler
+        </Link>
       </div>
     </div>
   );
