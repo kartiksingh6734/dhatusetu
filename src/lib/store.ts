@@ -587,3 +587,56 @@ export function stamp(iso: string) {
     minute: "2-digit",
   });
 }
+
+/* ------------------------------------------------------------------ */
+/* Live recycler offers on a lot                                       */
+/* ------------------------------------------------------------------ */
+
+export type LotOffer = {
+  id: string;
+  recyclerId: string;
+  name: string;
+  verificationStatus: string;
+  verified: boolean;
+  authorisation: string;
+  location: string;
+  serviceArea: string;
+  rate: number;
+  total: number;
+  status: string;
+  pickupAvailable: boolean;
+  pickupAt: string | null;
+  note: string | null;
+};
+
+/** Real quotes submitted by recyclers against one lot. */
+export async function listLotOffers(lotUuid: string): Promise<LotOffer[]> {
+  const { data, error } = await supabase
+    .from("quotes")
+    .select(
+      "*, recyclers(id, name, location, service_area, verification_status, authorization_status)",
+    )
+    .eq("lot_id", lotUuid)
+    .order("estimated_total", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((row) => {
+    const r = (row as unknown as Record<string, any>)["recyclers"] ?? {};
+    const status = String(r["verification_status"] ?? "pending");
+    return {
+      id: String(row.id),
+      recyclerId: String(row.recycler_id),
+      name: String(r["name"] ?? "Recycler"),
+      verificationStatus: status,
+      verified: status === "verified",
+      authorisation: String(r["authorization_status"] ?? ""),
+      location: String(r["location"] ?? ""),
+      serviceArea: String(r["service_area"] ?? ""),
+      rate: Number(row.quoted_rate),
+      total: Number(row.estimated_total),
+      status: String(row.status),
+      pickupAvailable: row.pickup_available !== false,
+      pickupAt: (row as any).pickup_at ?? null,
+      note: (row as any).note ?? null,
+    };
+  });
+}
