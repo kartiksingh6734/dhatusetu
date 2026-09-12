@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BadgeCheck, MapPin, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { Screen } from "@/components/app-shell";
@@ -12,7 +12,11 @@ import {
   rupees,
   store,
   readableError,
+  listLotOffers,
+  stamp,
+  type LotOffer,
 } from "@/lib/store";
+
 
 export const Route = createFileRoute("/offers")({
   validateSearch: (s: Record<string, unknown>) => ({ lot: String(s["lot"] ?? "") }),
