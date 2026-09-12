@@ -145,7 +145,7 @@ function mapRecycler(r: Record<string, unknown>): Recycler {
   return {
     id: String(r["id"]),
     name: String(r["name"]),
-    verified: !/pending|unverified/i.test(status),
+    verified: String(r["verification_status"] ?? "pending") === "verified",
     authorisation: status,
     location: String(r["location"] ?? ""),
     serviceArea: String(r["service_area"] ?? ""),
