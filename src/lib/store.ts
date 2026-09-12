@@ -366,9 +366,17 @@ export const store = {
           .insert({ ...row, lot_id: lotUuid, recycler_id: recyclerId });
     if (qErr) throw qErr;
 
+    // Every other offer on this lot is closed.
+    const { error: rejErr } = await supabase
+      .from("quotes")
+      .update({ status: "rejected" })
+      .eq("lot_id", lotUuid)
+      .neq("recycler_id", recyclerId);
+    if (rejErr) throw rejErr;
+
     const { error: lErr } = await supabase
       .from("lots")
-      .update({ status: "accepted" })
+      .update({ status: "accepted", pickup_status: "Offer Accepted" })
       .eq("id", lotUuid);
     if (lErr) throw lErr;
 
@@ -379,6 +387,7 @@ export const store = {
       status: "accepted",
     });
   },
+
 
   /** Confirm handover. Idempotent — one transaction row per lot. */
   async confirmHandover(lotUuid: string) {
