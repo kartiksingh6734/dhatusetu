@@ -44,6 +44,28 @@ function Offers() {
   const lot = useLot(lotId || undefined);
   const navigate = useNavigate();
   const [busy, setBusy] = useState<string | null>(null);
+  const [offers, setOffers] = useState<LotOffer[] | null>(null);
+  const [offersError, setOffersError] = useState<string | null>(null);
+  const lotUuid = lot?.uuid;
+
+  useEffect(() => {
+    if (!lotUuid) return;
+    let alive = true;
+    setOffers(null);
+    setOffersError(null);
+    listLotOffers(lotUuid)
+      .then((o) => alive && setOffers(o))
+      .catch((e) => {
+        if (!alive) return;
+        setOffers([]);
+        setOffersError("Could not load recycler offers right now.");
+        console.error(readableError(e));
+      });
+    return () => {
+      alive = false;
+    };
+  }, [lotUuid]);
+
 
   if (loading) {
     return (
